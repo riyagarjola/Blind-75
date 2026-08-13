@@ -561,6 +561,179 @@ public:
     }
 };
 
+17.Maximum Depth of Binary Tree
+Given the root of a binary tree, return its maximum depth.
+A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+ Input: root = [3,9,20,null,null,15,7]
+Output: 3
+
+Input: root = [1,null,2]
+Output: 2
+
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+    if(root==NULL) return 0;
+    int left=maxDepth(root->left);
+    int right=maxDepth(root->right);
+    return 1+max(left,right);    
+    }
+};
+
+18.Valid Palindrome
+A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers.
+Given a string s, return true if it is a palindrome, or false otherwise.
+
+ Input: s = "A man, a plan, a canal: Panama"
+Output: true
+
+Input: s = "race a car"
+Output: false
+
+Input: s = " "
+Output: true
+
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        int i = 0, j = s.length() - 1;
+        while (i < j) {
+            if (!isalnum(s[i]))
+                i++;
+            else if (!isalnum(s[j]))
+                j--;
+            else {
+                if (tolower(s[i]) != tolower(s[j])) {
+                    return false;
+                }
+                i++;
+                j--;
+            }
+        }
+        return true;
+    }
+};
+
+19.Linked List Cycle
+Given head, the head of a linked list, determine if the linked list has a cycle in it.
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. Internally, pos is used to denote the index of the node that tail's next pointer is connected to. Note that pos is not passed as a parameter.
+Return true if there is a cycle in the linked list. Otherwise, return false.
+
+ Input: head = [3,2,0,-4], pos = 1
+Output: true
+
+Input: head = [1,2], pos = 0
+Output: true
+
+Input: head = [1], pos = -1
+Output: false
+
+class Solution {
+public:
+    bool hasCycle(ListNode* head) {
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (slow && fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+20.Given the roots of two binary trees root and subRoot, return true if there is a subtree of root with the same structure and node values of subRoot and false otherwise.
+A subtree of a binary tree tree is a tree that consists of a node in tree and all of this node's descendants. The tree tree could also be considered as a subtree of itself.
+
+ Input: root = [3,4,5,1,2], subRoot = [4,1,2]
+Output: true
+
+Input: root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]
+Output: false
+
+class Solution {
+public:
+    bool isSame(TreeNode* root,TreeNode* subRoot){
+        if(root==NULL && subRoot==NULL){
+            return true;
+        }
+        if(root==NULL || subRoot==NULL){
+            return false;
+        }
+        if(root->val != subRoot->val){
+            return false;
+        }
+        return isSame(root->left,subRoot->left) && isSame(root->right,subRoot->right);
+    }
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+    if(root==NULL) return false;
+    if(root->val == subRoot->val){
+        if(isSame(root,subRoot)){
+            return true;
+        }
+    } 
+    return isSubtree(root->left,subRoot)|| isSubtree(root->right,subRoot);   
+    }
+};
+
+21.Valid Anagram
+Given two strings s and t, return true if t is an anagram of s, and false otherwise.
+
+Input: s = "anagram", t = "nagaram"
+Output: true
+
+Input: s = "rat", t = "car"
+Output: false
+
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.size() != t.size())
+            return false;
+        vector<int> freq(26, 0);
+        for (char ch : s) {
+            freq[ch - 'a']++;
+        }
+        for (char ch : t) {
+            freq[ch - 'a']--;
+
+            if (freq[ch - 'a'] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+22. Invert Binary Tree
+Given the root of a binary tree, invert the tree, and return its root.
+
+Input: root = [4,2,7,1,3,6,9]
+Output: [4,7,2,9,6,3,1]
+
+Input: root = [2,1,3]
+Output: [2,3,1]
+
+Input: root = []
+Output: []
+ 
+
+ 
+
+
+ 
+
+
+
+ 
+ 
+
+
+
  
  
 
