@@ -720,6 +720,204 @@ Output: [2,3,1]
 
 Input: root = []
 Output: []
+
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+    if(root==NULL){
+        return NULL;
+    }    
+    swap(root->left,root->right);
+    invertTree(root->left);
+    invertTree(root->right);
+    return root;
+    }
+};
+
+23.Combination Sum
+
+Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the frequency of at least one of the chosen numbers is different.
+The test cases are generated such that the number of unique combinations that sum up to target is less than 150 combinations for the given input.
+
+Input: candidates = [2,3,6,7], target = 7
+Output: [[2,2,3],[7]]
+
+Input: candidates = [2,3,5], target = 8
+Output: [[2,2,2,2],[2,3,3],[3,5]]
+
+Input: candidates = [2], target = 1
+Output: []
+
+class Solution {
+public:
+    void backtrack(vector<int>& candidates, int target, int start,
+                   vector<vector<int>>& ans, vector<int>& current) {
+        if (target == 0) {
+            ans.push_back(current);
+            return;
+        }
+        if (target < 0) {
+            return;
+        }
+        for (int i = start; i < candidates.size(); i++) {
+            current.push_back(candidates[i]);
+            backtrack(candidates, target - candidates[i], i, ans, current);
+            current.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> ans;
+        vector<int> current;
+        backtrack(candidates, target, 0, ans, current);
+        return ans;
+    }
+};
+
+//TC-o(n ki power T/m)  T=Target, m=minimum candidates value.
+//SC-o(T/m) auxiliary space excluding the output.
+
+24.Palindromic Substring
+
+Given a string s, return the number of palindromic substrings in it.
+A string is a palindrome when it reads the same backward as forward.
+A substring is a contiguous sequence of characters within the string.
+
+ Input: s = "abc"
+Output: 3
+
+Input: s = "aaa"
+Output: 6
+
+class Solution {
+public:
+    int countSubstrings(string s) {
+    int n=s.size();
+    int count=0;
+    for(int i=0;i<n;i++){
+        int l=i;
+        int r=i;
+        while(l>=0 && r<n && s[l]==s[r]){
+            count++;
+            l--;
+            r++;
+        }
+        l=i;
+        r=i+1;
+        while(l>=0 && r<n && s[l]==s[r]){
+            count++;
+            l--;
+            r++;
+        }
+    }
+    return count;
+    }
+};
+
+//Tc:o(n2) 
+//we have n possible centers. For each center, we can expand upto o(n) possible characters.
+//we check both odd and even centers but that's only a constant factor.
+//SC:o(1)
+
+25.Reverse Bits
+
+Reverse bits of a given 32 bits signed integer.
+
+Input: n = 43261596
+Output: 964176192
+
+Input: n = 2147483644
+Output: 1073741822
+
+class Solution {
+public:
+    int reverseBits(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        int result=0;
+        for (int i = 1; i <= 32; i++) {
+            result <<= 1;
+            result = result | (n & 1);
+            n >>= 1;
+        }
+        return result;
+    }
+};
+
+26.Reverse Linked List
+
+Given the head of a singly linked list, reverse the list, and return the reversed list.
+
+Input: head = [1,2,3,4,5]
+Output: [5,4,3,2,1]
+
+Input: head = [1,2]
+Output: [2,1]
+
+Input: head = []
+Output: []
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+    ListNode* prev=NULL;
+    ListNode*curr=head;
+    while(curr!=NULL){
+        ListNode*temp=curr->next;
+        curr->next=prev;
+        prev=curr;
+        curr=temp;
+    }
+    return prev;    
+    }
+};
+
+27.Meeting Rooms
+
+Given a 2D array arr[][], where arr[i][0] is the starting time of ith meeting and arr[i][1] is the ending time of ith meeting, the task is to check if it is possible for a person to attend all the meetings such that he can attend only one meeting at a particular time.
+Note: A person can attend a meeting if its starting time is greater than or equal to the previous meeting's ending time.
+
+Input: arr[][] = [[1, 4], [10, 15], [7, 10]]
+Output: true
+
+Input: arr[][] = [[2, 4], [9, 12], [6, 10]]
+Output: false
+
+class Solution {
+  public:
+    bool canAttend(vector<vector<int>> &arr) {
+    int n=arr.size();
+    sort(arr.begin(),arr.end());
+    for(int i=1;i<n;i++){
+        if(arr[i][0]<arr[i-1][1]){
+            return false;
+        }
+    }
+    return true;    
+    }
+};
+
+28.Longest Substring Without Repeating Characters
+
+Given a string s, find the length of the longest substring without duplicate characters.
+
+Input: s = "abcabcbb"
+Output: 3
+
+Input: s = "bbbbb"
+Output: 1
+
+Input: s = "pwwkew"
+Output: 3
+
+
+ 
+ 
+
+
+
+
  
 
  
