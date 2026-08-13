@@ -911,6 +911,38 @@ Output: 1
 Input: s = "pwwkew"
 Output: 3
 
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int n = s.size();
+        unordered_set<char> st;
+        int i = 0;
+        int maxLen = 0;
+        for (int j = 0; j < n; j++) {
+            while (st.count(s[j])) {
+                st.erase(s[i]);
+                i++;
+            }
+            st.insert(s[j]);
+            maxLen = max(maxLen, j - i + 1);
+        }
+        return maxLen;
+    }
+};
+
+//Tc:o(n)
+//Sc:o(min(n,charset))
+
+29.Longest Palindromic Substring
+
+Given a string s, return the longest palindromic substring in s.
+
+Input: s = "babad"
+Output: "bab"
+
+Input: s = "cbbd"
+Output: "bb"
+
 
  
  
