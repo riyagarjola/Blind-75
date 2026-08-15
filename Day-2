@@ -169,6 +169,156 @@ Output: [1,2,3,6,9,8,7,4,5]
 
 Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
 Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        int r = matrix.size();
+        int c = matrix[0].size();
+        int left = 0;
+        int top = 0;
+        int right = c - 1;
+        int bottom = r - 1;
+        vector<int> ans;
+        while (left <= right && top <= bottom) {
+            for (int i = left; i <= right; i++) {
+                ans.push_back(matrix[top][i]);
+            }
+            top++;
+            for (int i = top; i <= bottom; i++) {
+                ans.push_back(matrix[i][right]);
+            }
+            right--;
+            if (top <= bottom) {
+                for (int i = right; i >= left; i--) {
+                    ans.push_back(matrix[bottom][i]);
+                }
+                bottom--;
+            }
+            if (left <= right) {
+                for (int i = bottom; i >= top; i--) {
+                    ans.push_back(matrix[i][left]);
+                }
+                left++;
+            }
+        }
+        return ans;
+    }
+};
+
+37.Jump Game
+
+You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
+Return true if you can reach the last index, or false otherwise.
+
+Input: nums = [2,3,1,1,4]
+Output: true
+
+Input: nums = [3,2,1,0,4]
+Output: false
+
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n = nums.size();
+        int maxInd = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > maxInd) {
+                return false;
+            }
+            maxInd = max(maxInd, i + nums[i]);
+        }
+        return true;
+    }
+};
+
+38.Word Search
+
+Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+Output: true
+
+Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
+Output: true
+
+Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
+Output: false
+
+class Solution {
+public:
+    bool dfs(vector<vector<char>>& board, string word, int row, int col,
+             int index) {
+        int m = board.size();
+        int n = board[0].size();
+
+        if (index == word.size()) {
+            return true;
+        }
+        if (row < 0 || row >= m || col < 0 || col >= n) {
+            return false;
+        }
+        if (board[row][col] != word[index]) {
+            return false;
+        }
+        char temp = board[row][col];
+        board[row][col] = '#';
+
+        bool found = dfs(board, word, row - 1, col, index + 1) ||
+                     dfs(board, word, row + 1, col, index + 1) ||
+                     dfs(board, word, row, col - 1, index + 1) ||
+                     dfs(board, word, row, col + 1, index + 1);
+
+        board[row][col] = temp;
+        return found;
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        int m = board.size();
+        int n = board[0].size();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == word[0]) {
+                    if (dfs(board, word, i, j, 0)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
+
+39.Decode Ways
+
+You have intercepted a secret message encoded as a string of numbers. The message is decoded via the following mapping:
+"1" -> 'A'
+"2" -> 'B'
+"25" -> 'Y'
+"26" -> 'Z'
+However, while decoding the message, you realize that there are many different ways you can decode the message because some codes are contained in other codes ("2" and "5" vs "25").
+For example, "11106" can be decoded into:
+"AAJF" with the grouping (1, 1, 10, 6)
+"KJF" with the grouping (11, 10, 6)
+The grouping (1, 11, 06) is invalid because "06" is not a valid code (only "6" is valid).
+Note: there may be strings that are impossible to decode.
+Given a string s containing only digits, return the number of ways to decode it. If the entire string cannot be decoded in any valid way, return 0.
+The test cases are generated so that the answer fits in a 32-bit integer.
+
+Input: s = "12"
+Output: 2
+
+Input: s = "226"
+Output: 3
+
+Input: s = "06"
+Output: 0
+
+
+
+ 
+
+ 
  
 
 
