@@ -659,6 +659,101 @@ Output: [[1,0,1],[0,0,0],[1,0,1]]
 Input: matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
 Output: [[0,0,0,0],[0,4,5,0],[0,3,1,0]]
 
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int m = matrix[0].size();
+        int col0 = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    if (j != 0) {
+                        matrix[0][j] = 0;
+                    } else {
+                        col0 = 0;
+                    }
+                }
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < m; j++) {
+                if (matrix[i][j] != 0) {
+                    if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                        matrix[i][j] = 0;
+                    }
+                }
+            }
+        }
+        if (matrix[0][0] == 0) {
+            for (int j = 0; j < m; j++) {
+                matrix[0][j] = 0;
+            }
+        }
+        if (col0 == 0) {
+            for (int i = 0; i < n; i++) {
+                matrix[i][0] = 0;
+            }
+        }
+    }
+};
+
+48.Binary Tree Level Order Traversal
+
+Given the root of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).
+
+Input: root = [3,9,20,null,null,15,7]
+Output: [[3],[9,20],[15,7]]
+
+Input: root = [1]
+Output: [[1]]
+
+Input: root = []
+Output: []
+
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> ans;
+        if(root==NULL) return ans;
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            vector<int> level;
+            int n = q.size();
+            for (int i = 0; i < n; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                if (node->left != NULL) {
+                    q.push(node->left);
+                }
+                if (node->right != NULL) {
+                    q.push(node->right);
+                }
+                level.push_back(node->val);
+            }
+            ans.push_back(level);
+        }
+        return ans;
+    }
+};
+
+49.Unique Paths
+
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). 
+The robot can only move either down or right at any point in time.Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the
+bottom-right corner.The test cases are generated so that the answer will be less than or equal to 2 * 109.
+
+Input: m = 3, n = 7
+Output: 28
+
+Input: m = 3, n = 2
+Output: 3
+
+  
+
+
 
  
 
