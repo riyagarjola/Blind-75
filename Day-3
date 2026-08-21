@@ -103,5 +103,155 @@ Output: true
 Input: s = "catsandog", wordDict = ["cats","dog","sand","and","cat"]
 Output: false
 
+class Solution {
+public:
+    unordered_set<string>st;
+    int n;
+
+    bool solve(int idx,string &s,vector<int>&dp){
+        if(idx ==n){
+            return true;
+        }
+        if(dp[idx]!=-1){
+            return dp[idx];
+        }
+        for(int l=1;idx+l<=n;l++){
+            string temp=s.substr(idx,l);
+            if(st.find(temp)!=st.end() && solve(idx+l,s,dp)){
+                return dp[idx]=true;
+            }
+        }
+        return dp[idx]=false;
+    }
+    bool wordBreak(string s, vector<string>& wordDict) {
+    n=s.length();
+    vector<int>dp(n,-1);
+    for(string &word:wordDict){
+        st.insert(word);
+    }    
+    return solve(0,s,dp);
+    }
+}; 
+
+55. Find Median from Data Stream
+
+The median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value, and the median is the mean of the 
+two middle values.
+For example, for arr = [2,3,4], the median is 3.
+For example, for arr = [2,3], the median is (2 + 3) / 2 = 2.5.
+Implement the MedianFinder class:
+
+MedianFinder() initializes the MedianFinder object.
+void addNum(int num) adds the integer num from the data stream to the data structure.
+double findMedian() returns the median of all elements so far. Answers within 10-5 of the actual answer will be accepted.
+ 
+Input
+["MedianFinder", "addNum", "addNum", "findMedian", "addNum", "findMedian"]
+[[], [1], [2], [], [3], []]
+Output
+[null, null, null, 1.5, null, 2.0]
+
+class MedianFinder {
+public:
+    priority_queue<int> left_max_heap;
+    priority_queue<int, vector<int>, greater<int>> right_min_heap;
+    MedianFinder() {}
+    void addNum(int num) {
+        if (left_max_heap.empty() || num < left_max_heap.top()) {
+            left_max_heap.push(num);
+        } else {
+            right_min_heap.push(num);
+        }
+
+        // left_max_heap can be equal to right_min_heap or it is 1 greater then
+        // right_min_heap
+        if (left_max_heap.size() > right_min_heap.size()+1) {
+            right_min_heap.push(left_max_heap.top());
+            left_max_heap.pop();
+        } else if (left_max_heap.size() < right_min_heap.size()) {
+            left_max_heap.push(right_min_heap.top());
+            right_min_heap.pop();
+        }
+    }
+
+    double findMedian() {
+        if (left_max_heap.size() == right_min_heap.size()) {
+            double mean = (left_max_heap.top() + right_min_heap.top()) / 2.0;
+            return mean;
+        }
+        return left_max_heap.top();
+    }
+};
+
+56. Reorder List
+
+You are given the head of a singly linked-list. The list can be represented as:
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+
+Input: head = [1,2,3,4]
+Output: [1,4,2,3]
+
+Input: head = [1,2,3,4,5]
+Output: [1,5,2,4,3]
+
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) {
+            return;
+        }
+        ListNode* slow = head;
+        ListNode* fast = head;
+
+        // 1.Find the middle
+        while (fast->next != nullptr && fast->next->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        // 2.Reverse second half
+        ListNode* second = slow->next;
+        slow->next = nullptr;
+
+        ListNode* prev = nullptr;
+        while (second != nullptr) {
+            ListNode* next = second->next;
+            second->next = prev;
+            prev = second;
+            second = next;
+        }
+        second = prev;
+        // 3.Merge Two halves
+        ListNode* first = head;
+        while (second != nullptr) {
+            ListNode* temp1 = first->next;
+            ListNode* temp2 = second->next;
+            first->next = second;
+            second->next = temp1;
+
+            first = temp1;
+            second = temp2;
+        }
+    }
+};
+
+57.Kth Smallest Element in a BST
+
+Given the root of a binary search tree, and an integer k, return the kth smallest value (1-indexed) of all the values of the nodes in the tree.
+
+Input: root = [3,1,4,null,2], k = 1
+Output: 1
+
+Input: root = [5,3,6,2,4,null,null,1], k = 3
+Output: 3
+
+
+
+
+
 
  
