@@ -249,6 +249,86 @@ Output: 1
 Input: root = [5,3,6,2,4,null,null,1], k = 3
 Output: 3
 
+class Solution {
+public:
+    void inorder(TreeNode* root,int k,int &count,int &result){
+        if(root==NULL) return;
+        inorder(root->left,k,count,result);
+        count++;
+        if(count==k){
+            result=root->val;
+            return;
+        }
+        inorder(root->right,k,count,result);
+    }
+    int kthSmallest(TreeNode* root, int k) {
+    int count=0;
+    int result=-1;
+    inorder(root,k,count,result);
+    return result;    
+    }
+};
+
+58.House Robber
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you 
+from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken
+into on the same night.Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without 
+alerting the police.
+
+Input: nums = [1,2,3,1]
+Output: 4
+
+Input: nums = [2,7,9,3,1]
+Output: 12
+
+class Solution {
+public:
+    int solve(int i,vector<int>&nums,vector<int>&dp){
+        int n=nums.size();
+        if(i>=n){
+            return 0;
+        }
+        if(dp[i]!=-1){
+            return dp[i];
+        }
+        int take=nums[i]+solve(i+2,nums,dp);
+        int notTake=solve(i+1,nums,dp);
+        dp[i]=max(take,notTake);
+        return dp[i];
+    }
+    int rob(vector<int>& nums) {
+    int n=nums.size();
+    vector<int>dp(n,-1);
+    return solve(0,nums,dp);    
+    }
+};
+
+59.Number of Islands
+
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all 
+surrounded by water.
+
+ Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+
+Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+
+
+ 
+
 
 
 
