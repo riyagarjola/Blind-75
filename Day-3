@@ -304,27 +304,95 @@ public:
     }
 };
 
-59.Number of Islands
+59.Longest Increasing Subsequence
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
 
-Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
-An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all 
-surrounded by water.
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
 
- Input: grid = [
-  ["1","1","1","1","0"],
-  ["1","1","0","1","0"],
-  ["1","1","0","0","0"],
-  ["0","0","0","0","0"]
-]
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+
+Input: nums = [7,7,7,7,7,7,7]
 Output: 1
 
-Input: grid = [
-  ["1","1","0","0","0"],
-  ["1","1","0","0","0"],
-  ["0","0","1","0","0"],
-  ["0","0","0","1","1"]
-]
-Output: 3
+class Solution {
+public:
+    int solve(int i,int prev,vector<int>&nums,vector<vector<int>>&dp){
+    int n=nums.size();
+    if(i==n){
+        return 0;
+    }
+    if(dp[i][prev+1]!=-1)  return dp[i][prev+1];
+    int len=0+solve(i+1,prev,nums,dp);
+    if(prev==-1 || nums[i]>nums[prev]){
+    len=max(len,1+solve(i+1,i,nums,dp));
+    }
+    return dp[i][prev+1]=len;
+    }
+    int lengthOfLIS(vector<int>& nums) {
+    int n=nums.size();
+    vector<vector<int>> dp(n,vector<int>(n+1,-1));
+    return solve(0,-1,nums,dp);   
+    }
+}; 
+
+60.Encode and Decode Strings
+
+Design an algorithm to encode a list of strings to a string. The encoded string is then sent over the network and is decoded back to the original list of strings.
+
+Machine 1 (sender) has the function:
+String encode(List<String> strs) {
+    // ... your code
+    return encoded_string;
+}
+Machine 2 (receiver) has the function:
+List<String> decode(String encoded_string) {
+    // ... your code
+    return decoded_strs;
+}
+So Machine 1 does:
+
+String encoded_string = encode(strs);
+and Machine 2 does:
+
+Implement the encode and decode methods.
+
+Input: strs = ["Hello","World"]
+Output: ["Hello","World"]
+
+Input: strs = [""]
+Output: [""]
+
+class Solution {
+public:
+
+    string encode(vector<string>& strs) {
+    string result="";
+    for(string s:strs){
+        result+=to_string(s.length())+"#"+s;
+    }
+    return result;
+    }
+
+    vector<string> decode(string s) {
+    vector<string>result;
+    int i=0;
+    while(i<s.length()){
+    int j=i;
+    while(s[j]!='#'){
+        j++;
+    }
+    int len=stoi(s.substr(i,j-i));
+    result.push_back(s.substr(j+1,len));
+    i=j+1+len;
+    }
+    return result;
+    }
+};
+
+61.
+
 
 
  
