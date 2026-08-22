@@ -391,7 +391,145 @@ public:
     }
 };
 
-61.
+61.Alien Dictionary
+
+There is a new alien language that uses the English alphabet, but the order of the letters is unknown.
+You are given a list of strings words from the alien language's dictionary. It is claimed that the strings in words are sorted lexicographically by the rules of 
+this new language.If this claim is incorrect, and the given arrangement of strings in words cannot correspond to any order of letters, return "".
+Otherwise, return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules.
+If there are multiple solutions, return any of them.A string a is lexicographically smaller than a string b if either of the following is true:
+
+The first letter where they differ is smaller in a than in b.
+a is a prefix of b and a.length < b.length.
+
+Input: words = ["z","o"]
+Output: "zo"
+
+Input: words = ["hrn","hrf","er","enn","rfnn"]
+Output: "hernf"
+
+class Solution {
+public:
+    string foreignDictionary(vector<string>& words) {
+    vector<vector<int>>adj(26);
+    vector<bool>present(26,false);
+    for(string word:words){
+        for(char c:word){
+            present[c-'a']=true;
+        }
+    }
+    for(int i=0;i<words.size()-1;i++){
+        string s1=words[i];
+        string s2=words[i+1];
+        int len=min(s1.size(),s2.size());
+        if(s1.size()>s2.size() && s1.substr(0,len)==s2.substr(0,len)){
+            return "";
+        }
+        for(int j=0;j<len;j++){
+            if(s1[j]!=s2[j]){
+                int u=s1[j]-'a';
+                int v=s2[j]-'a';
+                adj[u].push_back(v);
+                break;
+            }
+        }
+    }
+    vector<int>indegree(26,0);
+    for(int i=0;i<26;i++){
+        for(auto it:adj[i]){
+        indegree[it]++;
+        }
+    }
+    queue<int>q;
+    for(int i=0;i<26;i++){
+        if(present[i] && indegree[i]==0){
+            q.push(i);
+        }
+    }
+    string ans="";
+    while(!q.empty()){
+        int node=q.front();
+        q.pop();
+        ans+=char(node+'a');
+        for(auto it:adj[node]){
+            indegree[it]--;
+            if(indegree[it]==0){
+                q.push(it);
+            }
+         }
+    }
+    int totalCharacters=0;
+    for(int i=0;i<26;i++){
+        if(present[i]){
+            totalCharacters++;
+        }
+    }
+    if(ans.size()!=totalCharacters){
+        return "";
+    }
+    return ans;
+    }
+};
+
+62.Minimum Window Substring
+
+Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is 
+included in the window. If there is no such substring, return the empty string "". The testcases will be generated such that the answer is unique.
+
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+
+Input: s = "a", t = "a"
+Output: "a"
+
+Input: s = "a", t = "aa"
+Output: ""
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        if (n < m)
+            return "";
+        int count = 0, startIdx = -1, l = 0, r = 0;
+        int minLen = INT_MAX;
+        vector<int> hash(256, 0);
+        for (char c : t) {
+            hash[c]++;
+        }
+        while (r < n) {
+            if (hash[s[r]] > 0) {
+                count++;
+            }
+            hash[s[r]]--;
+            while (count == m) {
+                if (r - l + 1 < minLen) {
+                    minLen = r - l + 1;
+                    startIdx = l;
+                }
+                hash[s[l]]++;
+                if (hash[s[l]] > 0) {
+                    count--;
+                }
+                l++;
+            }
+            r++;
+        }
+        if (startIdx == -1) {
+            return "";
+        }
+        return s.substr(startIdx, minLen);
+    }
+};
+
+63.
+
+
+
+
+
+
 
 
 
