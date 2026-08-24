@@ -576,6 +576,563 @@ public:
     }
 };
 
+64.Decode Ways
+You have intercepted a secret message encoded as a string of numbers. The message is decoded via the following mapping:
+However, while decoding the message, you realize that there are many different ways you can decode the message because some codes are contained in other codes
+("2" and "5" vs "25").
+
+For example, "11106" can be decoded into:
+"AAJF" with the grouping (1, 1, 10, 6)
+"KJF" with the grouping (11, 10, 6)
+The grouping (1, 11, 06) is invalid because "06" is not a valid code (only "6" is valid).
+Note: there may be strings that are impossible to decode.
+Given a string s containing only digits, return the number of ways to decode it. If the entire string cannot be decoded in any valid way, return 0.
+The test cases are generated so that the answer fits in a 32-bit integer.
+
+Input: s = "12"
+Output: 2
+
+Input: s = "226"
+Output: 3
+
+Input: s = "06"
+Output: 0
+
+class Solution {
+public:
+    int t[101];
+    int solve(int i, string &s, int &n){
+        if(i==n){
+            return t[i]=1;  //one valid split done
+        }
+        if(s[i]=='0'){
+            return t[i]=0;  // don't move forward not possible to split;
+        }
+        if(t[i]!=-1){
+            return t[i];
+        }
+
+        int result=solve(i+1,s,n);
+        if(i+1 < n){
+            if(s[i]=='1' ||(s[i]=='2' && s[i+1]<='6')){
+            result += solve(i+2,s,n);
+            }
+        }
+        return t[i]=result;
+    }
+    int numDecodings(string s) {
+    int n=s.size();
+    memset(t,-1,sizeof(t));
+    return solve(0,s,n);    
+    }
+};
+
+Bottom up
+
+class Solution {
+public:
+    int numDecodings(string s) {
+    int n=s.size();
+    vector<int>t(n+1,0);
+    t[n]=1;
+    for(int i=n-1;i>=0;i--){
+        if(s[i]=='0'){
+            t[i]=0;
+        }else{
+            t[i]=t[i+1]; //solve(i+1);
+
+            if(i+1 < n){
+                if(s[i]=='1' ||(s[i]=='2' && s[i+1] <= '6')){
+                    t[i] += t[i+2];  //solve(i+2);
+                }
+            }
+        }
+    } 
+    return t[0];   
+    }
+};
+
+65.House Robber II
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a 
+circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the
+police if two adjacent houses were broken into on the same night. Given an integer array nums representing the amount of money of each house, return the maximum
+amount of money you can rob tonight without alerting the police.
+
+Input: nums = [2,3,2]
+Output: 3
+
+Input: nums = [1,2,3,1]
+Output: 4
+
+Input: nums = [1,2,3]
+Output: 3
+
+Top-Down
+class Solution {
+public:
+    int solve(vector<int>&nums,int i,int end,vector<int>&dp){
+        if(i > end){
+            return 0;
+        }
+        if(dp[i]!=-1){
+            return dp[i];
+        }
+        int take=nums[i]+solve(nums,i+2,end,dp);
+        int notTake=solve(nums,i+1,end,dp);
+         dp[i]=max(take,notTake);
+        return dp[i];
+    }
+    int rob(vector<int>& nums) {
+    int n=nums.size();
+    if(n==1) return nums[0];
+    vector<int>dp1(n,-1);
+    vector<int>dp2 (n,-1);    
+    int ans1=solve(nums,0,n-2,dp1);
+    int ans2=solve(nums,1,n-1,dp2);
+    int maxi= max(ans1,ans2);
+    return maxi;
+    }
+};
+
+Bottom-up
+
+class Solution {
+public:
+    int solve(vector<int>&nums,int start,int end){
+    int n=nums.size();
+    vector<int>dp(n+2,0);
+    for(int i=end;i>=start;i--){
+        dp[i]=max(nums[i]+dp[i+2],dp[i+1]);
+    } 
+    return dp[start];
+    }
+    int rob(vector<int>& nums) {
+    int n=nums.size();
+    if(n==1) return nums[0];
+    int ans1=solve(nums,0,n-2);
+    int ans2=solve(nums,1,n-1);
+    return max(ans1,ans2);   
+    }
+};
+
+66.Word Search II
+
+Given an m x n board of characters and a list of strings words, return all words on the board.
+Each word must be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell 
+may not be used more than once in a word.
+
+Input: board = [["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f","l","v"]], words = ["oath","pea","eat","rain"]
+Output: ["eat","oath"]
+
+Input: board = [["a","b"],["c","d"]], words = ["abcb"]
+Output: []
+
+class Solution {
+public:
+    vector<string>result;
+    int m,n;
+    struct trieNode{
+    bool isEndOfWord;
+    string word;
+    trieNode* children[26];
+    };
+    trieNode*getNode(){
+        trieNode* newNode=new trieNode();
+        newNode->isEndOfWord=false;
+        newNode->word="";
+        for(int i=0;i<26;i++){
+            newNode->children[i]=NULL;
+        }
+        return newNode;
+    }
+    void insert(trieNode* root, string &word){
+        trieNode* crawler=root;
+        for(int i=0;i<word.length();i++){
+            char ch=word[i];
+            if(crawler->children[ch-'a']==NULL){
+             crawler->children[ch-'a']=getNode();   
+            }
+            crawler=crawler->children[ch-'a'];
+        }
+        crawler->isEndOfWord=true;
+        crawler->word=word;
+    }
+    vector<vector<int>>directions{{1,0},{-1,0},{0,1},{0,-1}};
+    void findTrieWords(vector<vector<char>>&board,int i,int j,trieNode*root){
+        if(i<0 || i>=m || j<0 || j>=n){
+            return ;
+        }
+        if(board[i][j]=='$' ||root->children[board[i][j]-'a']==NULL){
+            return ;
+        }
+        root=root->children[board[i][j]-'a'];
+        if(root->isEndOfWord==true){
+            result.push_back(root->word);
+            root->isEndOfWord=false;
+        }
+        char temp=board[i][j];
+        board[i][j]='$';
+
+        for(vector<int>&dir:directions){
+            int new_i=i+dir[0];
+            int new_j=j+dir[1];
+
+            findTrieWords(board,new_i,new_j,root);
+        }
+        board[i][j]=temp;
+    }
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+    m=board.size();
+    n=board[0].size();
+    trieNode* root=getNode();
+    for(string &word:words){
+        insert(root,word);
+    } 
+    for(int i=0;i<m;i++){
+        for(int j=0;j<n;j++){
+            char ch=board[i][j];
+            if(root->children[ch-'a']!=NULL){
+                findTrieWords(board,i,j,root);
+            }
+        }
+    } 
+    return result;  
+    }
+};
+
+67.Number of Islands
+
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the
+grid are all surrounded by water.
+
+Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+
+Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+
+class Solution {
+public:
+    int n,m;
+    void dfs(int row,int col,vector<vector<char>>&grid){
+        if(row < 0 || row >=n || col < 0 || col >= m || grid[row][col]=='0'){
+            return;
+        }
+        grid[row][col]='0';
+        dfs(row,col-1,grid);
+        dfs(row,col+1,grid);
+        dfs(row-1,col,grid);
+        dfs(row+1,col,grid);
+    }
+    int numIslands(vector<vector<char>>& grid) {
+     n=grid.size();
+     m=grid[0].size();
+    int cnt=0;
+    for(int row=0;row<n;row++){
+        for(int col=0;col<m;col++){
+            if(grid[row][col]=='1'){
+                cnt++;
+                dfs(row,col,grid);
+            }
+        }
+    }  
+    return cnt;  
+    }
+};
+
+68.Unique Paths
+
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner 
+(i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.Given the two integers m and n, return the number of possible unique
+paths that the robot can take to reach the bottom-right corner.The test cases are generated so that the answer will be less than or equal to 2 * 109.
+
+Input: m = 3, n = 7
+Output: 28
+
+Input: m = 3, n = 2
+Output: 3
+
+class Solution {
+public:
+    int solve(int i,int j,vector<vector<int>>&dp){
+        if(i==0 && j==0){
+            return 1;
+        }
+        if(i<0 || j<0){
+            return 0;
+        }
+        if(dp[i][j]!=-1){
+            return dp[i][j];
+        }
+        int up=solve(i-1,j,dp);
+        int left=solve(i,j-1,dp);
+        dp[i][j]=up+left;
+        return dp[i][j];
+    }
+    int uniquePaths(int m, int n) {
+    vector<vector<int>>dp(m,vector<int>(n,-1));
+    return solve(m-1,n-1,dp);    
+    }
+};
+
+69.Number of Connected Components in an Undirected Graph
+
+You have an undirected graph of n nodes labeled from 0 to n - 1. You are given an integer n and an array edges where edges[i] = [aᵢ, bᵢ] indicates that
+there is an edge between aᵢ and bᵢ in the graph. Return the number of connected components in the graph.
+
+Input:
+n = 5, edges = [[0,1],[1,2],[3,4]]
+Output: 2
+
+Input:
+n = 5, edges = [[0,1],[1,2],[2,3],[3,4]]
+Output: 1
+
+DFS
+class Solution {
+public:
+    void dfs(vector<vector<int>>&adj,vector<bool>&visited,int node){
+        visited[node]=true;
+        for(int neighbor:adj[node]){
+            if(!visited[neighbor]){
+                dfs(adj,visited,neighbor);
+            }
+        }
+    }
+    int countComponents(int n, vector<vector<int>>& edges) {
+    vector<vector<int>>adj(n);
+    vector<bool>visited(n,false);
+    for(const auto &edge:edges){
+        adj[edge[0]].push_back(edge[1]);
+        adj[edge[1]].push_back(edge[0]);
+    }
+    int res=0;
+    for(int node=0;node<n;node++){
+        if(!visited[node]){
+            dfs(adj,visited,node);
+            res++;
+        }
+    }
+    return res;
+    }
+};
+
+BFS
+
+class Solution {
+public:
+    void bfs(vector<vector<int>>&adj,vector<bool>&visited,int node){
+       queue<int>q;
+       q.push(node);
+       visited[node]=true;
+       while(!q.empty()){
+        int cur=q.front();
+        q.pop();
+        for(int neighbor:adj[cur]){
+            if(!visited[neighbor]){
+                visited[neighbor]=true;
+                q.push(neighbor);
+            }
+        }
+       } 
+    }
+    int countComponents(int n, vector<vector<int>>& edges) {
+    vector<vector<int>>adj(n);
+    vector<bool>visited(n,false);
+    for(const auto &edge:edges){
+        adj[edge[0]].push_back(edge[1]);
+        adj[edge[1]].push_back(edge[0]);
+    }
+    int res=0;
+    for(int node=0;node<n;node++){
+        if(!visited[node]){
+            bfs(adj,visited,node);
+            res++;
+        }
+    }
+    return res;
+    }
+};
+
+70.Implement Trie (Prefix Tree)
+
+A trie (pronounced as "try") or prefix tree is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.
+Implement the Trie class:
+Trie() Initializes the trie object.
+void insert(String word) Inserts the string word into the trie.
+boolean search(String word) Returns true if the string word is in the trie (i.e., was inserted before), and false otherwise.
+boolean startsWith(String prefix) Returns true if there is a previously inserted string word that has the prefix prefix, and false otherwise.
+ 
+Input
+["Trie", "insert", "search", "search", "startsWith", "insert", "search"]
+[[], ["apple"], ["apple"], ["app"], ["app"], ["app"], ["app"]]
+Output
+[null, null, true, false, true, null, true]
+
+class Trie {
+public:
+    struct trieNode{
+        bool isEndOfWord;
+        trieNode *children[26];
+    };
+    trieNode* getNode(){
+        trieNode* newNode=new trieNode();
+        newNode->isEndOfWord=false;
+        for(int i=0;i<26;i++){
+            newNode->children[i]=NULL;
+        }
+        return newNode;
+    }
+    trieNode* root;
+    Trie() {
+    root=getNode();    
+    }
+    
+    void insert(string word) {
+    trieNode* crawler=root;
+    for(int i=0;i<word.length();i++){
+    char ch=word[i];
+    int idx=ch-'a';
+    if(crawler->children[idx]==NULL){
+        crawler->children[idx]=getNode();
+    } 
+    crawler=crawler->children[idx];   
+    }
+    crawler->isEndOfWord=true;
+    }
+    
+    bool search(string word) {
+    trieNode* crawler=root;
+    for(int i=0;i<word.length();i++){
+        char ch=word[i];
+        int idx=ch-'a';
+        if(crawler->children[idx]==NULL){
+            return false;
+        }
+        crawler=crawler->children[idx];
+    }    
+    if(crawler!=NULL && crawler->isEndOfWord==true){
+        return true;
+    }
+    return false;
+    }
+    
+    bool startsWith(string prefix) {
+    trieNode* crawler=root;
+    int i=0;
+    for(;i<prefix.length();i++){
+        char ch=prefix[i];
+        int idx=ch-'a';
+        if(crawler->children[idx]==NULL){
+            return false;
+        }
+        crawler=crawler->children[idx];
+    } 
+    if(i==prefix.length()){
+        return true;
+    }  
+    return false;
+    }
+};
+
+71.Design Add and Search Words Data Structure
+
+Design a data structure that supports adding new words and finding if a string matches any previously added string.
+Implement the WordDictionary class:
+
+WordDictionary() Initializes the object.
+void addWord(word) Adds word to the data structure, it can be matched later.
+bool search(word) Returns true if there is any string in the data structure that matches word or false otherwise. word may contain dots '.' where 
+dots can be matched with any letter.
+ 
+Input
+["WordDictionary","addWord","addWord","addWord","search","search","search","search"]
+[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]
+Output
+[null,null,null,null,false,true,true,true]
+
+class WordDictionary {
+public:
+    struct trieNode{
+    bool isEndOfWord;
+    trieNode* children[26];
+    };
+    trieNode *getNode(){
+    trieNode *newNode= new trieNode();
+    newNode->isEndOfWord=false;
+    for(int i=0;i<26;i++){
+    newNode->children[i]=NULL;
+    }
+    return newNode;
+    }
+
+    trieNode* root;
+
+    WordDictionary() {
+    root=getNode();    
+    }
+    
+    void addWord(string word) {
+    trieNode *crawler=root;
+    for(int i=0;i<word.length();i++){
+    char ch=word[i];
+    int idx=ch-'a';
+    if(crawler->children[idx]==NULL){
+        crawler->children[idx]=getNode();
+    }
+    crawler=crawler->children[idx];
+    }
+    crawler->isEndOfWord=true;   
+    }
+    bool searchUtil(trieNode*root,string word){
+    trieNode* crawler=root;
+    for(int i=0;i<word.length();i++){
+        char ch= word[i];
+
+        if(ch=='.'){
+            for(int j=0;j<26;j++){
+                if(crawler->children[j]!=NULL){
+                    if(searchUtil(crawler->children[j],word.substr(i+1))==true){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        else if(crawler->children[ch-'a']==NULL){
+        return false;
+        }
+     crawler=crawler->children[ch-'a'];   
+    }
+    if(crawler != NULL && crawler->isEndOfWord==true){
+        return true;
+    }
+    return false;
+    }
+    bool search(string word) {
+    return searchUtil(root,word);   
+    }
+};
+
+
+
+
+
+
+ 
+
 
 
 
