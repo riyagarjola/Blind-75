@@ -474,8 +474,93 @@ public:
     return atMostk(nums,k)-atMostk(nums,k-1);   
     }
 };
- 
 
+14.Minimum Window Substring
+
+Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is 
+included in the window. If there is no such substring, return the empty string "". The testcases will be generated such that the answer is unique.
+
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+
+Input: s = "a", t = "a"
+Output: "a"
+
+Input: s = "a", t = "aa"
+Output: ""
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+    int n=s.size();
+    if(t.size()>n){
+        return ""; 
+    }
+    unordered_map<char,int>mp;
+    int minWindowSize=INT_MAX;
+    int i=0,j=0;
+    int start_i=0;
+    while(j<n){
+    char ch=s[j];
+    int requiredCount=t.size();
+    if(mp[ch]>0){
+        mp[ch]--;
+        requiredCount--; 
+    }
+        while(requiredCount==0){
+            int currentWindowSize=j-i+1;
+            if(minWindowSize > currentWindowSize){
+                minWindowSize=currentWindowSize;
+                start_i=i;
+            }
+            mp[s[i]]++;
+            if(mp[s[i]]>0){
+                requiredCount++;
+            }
+            i++;
+        }
+        j++;
+    }    
+    return minWindowSize==INT_MAX ? "" : s.substr(start_i,minWindowSize);    
+    }
+};
+
+15.Contains Duplicate II
+
+Given an integer array nums and an integer k, return true if there are two distinct indices i and j in the array such that nums[i] == nums[j] 
+and abs(i - j) <= k.
+
+Input: nums = [1,2,3,1], k = 3
+Output: true
+
+Input: nums = [1,0,1,1], k = 1
+Output: true
+
+Input: nums = [1,2,3,1,2,3], k = 2
+Output: false
+ 
+class Solution {
+public:
+    bool containsNearbyDuplicate(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_set<int> st;
+        int i = 0, j = 0;
+        while (j < n) {
+            if (abs(i - j) > k) {
+                st.erase(nums[i]);
+                i++;
+            }
+            if (st.find(nums[j]) != st.end()) {
+                return true;
+            }
+            st.insert(nums[j]);
+            j++;
+        }
+        return false;
+    }
+};
+
+16.
  
 
 
