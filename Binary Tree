@@ -152,4 +152,242 @@ public:
     return ans;  
     }
 };
+
+5.Binary Tree Level Order Traversal II
+
+Given the root of a binary tree, return the bottom-up level order traversal of its nodes' values. (i.e., from left to right, level by level from leaf to root).
+
+Input: root = [3,9,20,null,null,15,7]
+Output: [[15,7],[9,20],[3]]
+
+Input: root = [1]
+Output: [[1]]
+
+Input: root = []
+Output: []
+
+class Solution {
+public:
+    vector<vector<int>> levelOrderBottom(TreeNode* root) {
+     vector<vector<int>>ans;
+     if(root==nullptr)  return ans;
+     queue<TreeNode*>q;
+     q.push(root);
+     while(!q.empty()){
+        int n=q.size();
+        vector<int>level;
+        for(int i=0;i<n;i++){
+        TreeNode* node=q.front();
+        q.pop();
+        level.push_back(node->val);
+        if(node->left){
+            q.push(node->left);
+        }
+        if(node->right){
+            q.push(node->right);
+        }
+    }
+        ans.push_back(level);
+     } 
+     reverse(ans.begin(),ans.end());
+     return ans;   
+    }
+};
+
+6.Average of Levels in Binary Tree
+
+Given the root of a binary tree, return the average value of the nodes on each level in the form of an array. Answers within 10-5 of the actual answer will be 
+accepted.
+ 
+Input: root = [3,9,20,null,null,15,7]
+Output: [3.00000,14.50000,11.00000]
+
+Input: root = [3,9,20,15,7]
+Output: [3.00000,14.50000,11.00000]
+
+class Solution {
+public:
+    vector<double> averageOfLevels(TreeNode* root) {
+    vector<double>ans;
+    if(root==nullptr)  return ans;
+    queue<TreeNode*>q;
+    q.push(root);
+    while(!q.empty()){
+        long long sum=0;
+        int n=q.size();
+        for(int i=0;i<n;i++){
+            TreeNode* node=q.front();
+            q.pop();
+            sum += node->val;
+            if(node->left){
+                q.push(node->left);
+            }
+            if(node->right){
+                q.push(node->right);
+            }
+        }
+    ans.push_back((double)sum/n);
+    }
+    return ans;
+    }
+};
+
+7.Find Largest Value in Each Tree Row
+
+Given the root of a binary tree, return an array of the largest value in each row of the tree (0-indexed).
+
+Input: root = [1,3,2,5,3,null,9]
+Output: [1,3,9]
+
+Input: root = [1,2,3]
+Output: [1,3]
+
+class Solution {
+public:
+    vector<int> largestValues(TreeNode* root) {
+        vector<int> ans;
+        if (root == nullptr)
+            return ans;
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            int n = q.size();
+            int maxi = INT_MIN;
+            for (int i = 0; i < n; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                maxi = max(maxi, node->val);
+                if (node->left) {
+                    q.push(node->left);
+                }
+                if (node->right) {
+                    q.push(node->right);
+                }
+            }
+            ans.push_back(maxi);
+        }
+        return ans;
+    }
+};
+
+8.Maximum Depth of Binary Tree
+
+Given the root of a binary tree, return its maximum depth.
+A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+Input: root = [3,9,20,null,null,15,7]
+Output: 3
+
+Input: root = [1,null,2]
+Output: 2
+
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+    if(root==nullptr) return 0;
+    return 1+max(
+        maxDepth(root->left),
+        maxDepth(root->right));    
+    }
+};
+
+9.Minimum Depth of Binary Tree
+
+Given a binary tree, find its minimum depth.
+The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+Note: A leaf is a node with no children.
+
+Input: root = [3,9,20,null,null,15,7]
+Output: 2
+
+Input: root = [2,null,3,null,4,null,5,null,6]
+Output: 5
+
+class Solution {
+public:
+    int minDepth(TreeNode* root) {
+    if(root==nullptr) return 0;
+    if(root->left == nullptr){
+        return 1+minDepth(root->right);
+    }
+    if(root->right == nullptr){
+        return 1+minDepth(root->left);
+    }
+    return 1+min(
+        minDepth(root->left),
+        minDepth(root->right));   
+    }
+};
+
+10.Same Tree
+Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+
+Input: p = [1,2,3], q = [1,2,3]
+Output: true
+
+Input: p = [1,2], q = [1,null,2]
+Output: false
+
+Input: p = [1,2,1], q = [1,1,2]
+Output: false
+
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+    if(p==nullptr && q==nullptr){
+        return true;
+    }    
+    if(p==nullptr || q==nullptr){
+        return false;
+    }
+    if(p->val != q->val){
+        return false;
+    }
+    return isSameTree(p->left,q->left) && isSameTree(p->right,q->right);
+    }
+};
+
+11. Symmetric Tree
+
+Given the root of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
+
+Input: root = [1,2,2,3,4,4,3]
+Output: true
+
+Input: root = [1,2,2,null,3,null,3]
+Output: false
+
+class Solution {
+public:
+    bool symmetriCheck(TreeNode* left,TreeNode* right){
+        if(left==NULL || right==NULL){
+            return left==right;
+        }
+        if(left->val != right->val){
+            return false;
+        }
+        return symmetriCheck(left->left,right->right) &&
+        symmetriCheck(left->right,right->left);
+    }
+    bool isSymmetric(TreeNode* root) {
+    return root==NULL || symmetriCheck(root->left,root->right);    
+    }
+};
+
+12.Balanced Binary Tree
+
+Given a binary tree, determine if it is height-balanced.
+
+Input: root = [3,9,20,null,null,15,7]
+Output: true
+
+Input: root = [1,2,2,3,3,null,null,4,4]
+Output: false
+
+Input: root = []
+Output: true
+
+
+ 
  
