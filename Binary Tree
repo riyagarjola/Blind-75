@@ -648,6 +648,138 @@ Output: [3,9,20,null,null,15,7]
 Input: preorder = [-1], inorder = [-1]
 Output: [-1]
 
+class Solution {
+public:
+    TreeNode* build(vector<int>&preorder,vector<int>&inorder,int &preIndex,int inStart,int inEnd){
+        if(inStart > inEnd){
+            return nullptr;
+        }
+        int rootValue=preorder[preIndex];
+        preIndex++;
+        TreeNode *root=new TreeNode(rootValue);
+        int index=inStart;
+        while(inorder[index]!=rootValue){
+            index++;
+        }  
+        root->left=build(preorder,inorder,preIndex,inStart,index-1);
+        root->right=build(preorder,inorder,preIndex,index+1,inEnd);
+        return root; 
+    }
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+    int preIndex=0;
+    return build(preorder,inorder,preIndex,0,inorder.size()-1);    
+    }
+};
+
+
+21.Top View of Binary Tree
+
+You are given the root of a binary tree, and your task is to return its top view. The top view of a binary tree is the set of nodes visible when the tree is viewed 
+from the top.
+
+Note:
+Return the nodes from the leftmost node to the rightmost node.
+If multiple nodes overlap at the same horizontal position, only the topmost (closest to the root) node is included in the view. 
+
+Input: root = [1, 2, 3]
+Output: [2, 1, 3]
+
+Input: root = [10, 20, 30, 40, 60, 90, 100]
+Output: [40, 20, 10, 30, 100]
+
+class Solution {
+  public:
+    vector<int> topView(Node *root) {
+    vector<int>ans;
+    if(root==nullptr){
+        return ans;
+    }
+    map<int,int>mpp;
+    queue<pair<Node*,int>>q;
+    q.push({root,0});
+    while(!q.empty()){
+        auto it=q.front();
+        q.pop();
+        Node* node=it.first;
+        int line=it.second;
+        if(mpp.find(line)==mpp.end()){
+            mpp[line]=node->data;
+        }
+        if(node->left != nullptr){
+            q.push({node->left,line-1});
+        }
+        if(node->right != nullptr){
+            q.push({node->right,line+1});
+        }
+    }
+    for(auto it:mpp){
+        ans.push_back(it.second);
+    }    
+    return ans;
+    }
+};
+
+22.Bottom View of Binary Tree
+
+You are given the root of a binary tree, and your task is to return its bottom view. The bottom view of a binary tree is the set of nodes visible when the tree 
+is viewed from the bottom. Note: If there are multiple bottom-most nodes for a horizontal distance from the root, then the latter one in the level order traversal is considered.
+
+Input: root = [1, 2, 3, 4, 5, N, 6]
+Output: [4, 2, 5, 3, 6]
+
+Input: root = [20, 8, 22, 5, 3, 4, 25, N, N, 10, 14, N, N, 28, N]
+Output: [5, 10, 4, 28, 25]
+
+class Solution {
+  public:
+    vector<int> bottomView(Node *root) {
+    vector<int>ans;
+    if(root==nullptr){
+        return ans;
+    }
+    map<int,int>mpp;
+    queue<pair<Node*,int>>q;
+    q.push({root,0});
+    while(!q.empty()){
+        auto it=q.front();
+        q.pop();
+        Node* node=it.first;
+        int line=it.second;
+        mpp[line]=node->data;
+        if(node->left != nullptr){
+            q.push({node->left, line-1});
+        }
+        if(node->right != nullptr){
+            q.push({node->right,line+1});
+        }
+    }
+    for(auto it:mpp){
+        ans.push_back(it.second);
+    }
+    return ans;
+    }
+};
+
+23.Maximum Width of Binary Tree
+
+Given the root of a binary tree, return the maximum width of the given tree.
+The maximum width of a tree is the maximum width among all levels.
+The width of one level is defined as the length between the end-nodes (the leftmost and rightmost non-null nodes), where the null nodes between the end-nodes that
+would be present in a complete binary tree extending down to that level are also counted into the length calculation.
+It is guaranteed that the answer will in the range of a 32-bit signed integer.
+
+Input: root = [1,3,2,5,3,null,9]
+Output: 4
+
+Input: root = [1,3,2,5,null,null,9,6,null,7]
+Output: 7
+
+Input: root = [1,3,2,5]
+Output: 2
+
+ 
+    
+
 
 
 
